@@ -4,14 +4,14 @@ from selenium import webdriver
 from pathlib import Path
 import pandas as pd
 import time
+import os.path
 
 browser_options = Options()
-file_path = str(Path(__file__).parent)
+folder_path = str(Path(__file__).parent)
 browser_options.add_experimental_option("prefs", {
-  "download.default_directory": file_path
+  "download.default_directory": folder_path
   })
 
-print(file_path)
 #Iniciate browser
 browser = webdriver.Chrome(options=browser_options)
 browser.maximize_window()
@@ -20,13 +20,16 @@ browser.maximize_window()
 browser.get("https://rpachallenge.com/")
 
 #Download Excel File
-try:
-    file_exists = file_path.resolve(strict=True)
-except:
-    browser.find_element(By.XPATH, "//a[@class=' col s12 m12 l12 btn waves-effect waves-light uiColorPrimary center']").click()
+file_path = Path(f"{folder_path}\\challenge.xlsx")
+time.sleep(4)
+
+if not os.path.isfile(file_path):
+  browser.find_element(By.XPATH, "//a[@class=' col s12 m12 l12 btn waves-effect waves-light uiColorPrimary center']").click()
+  time.sleep(4)
+
 
 #Reading Excel
-excel_file = pd.read_excel("./challenge.xlsx", header=None, skiprows=1)
+excel_file = pd.read_excel("challenge.xlsx", header=None, skiprows=1)
 for row in excel_file.itertuples():
     #First Name
     browser.find_element(By.XPATH, "//input[@ng-reflect-name='labelFirstName']").send_keys(row[1])
